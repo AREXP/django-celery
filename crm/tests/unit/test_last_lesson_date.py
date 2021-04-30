@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+from django.utils import timezone
 from freezegun import freeze_time
 from mixer.backend.django import mixer
 
@@ -64,8 +65,12 @@ class LastLessonTest(TestCase):
             self.assertIsNone(self.customer.last_subscription_lesson_date)
 
             first_class.mark_as_fully_used()
+            self.customer.refresh_from_db()
+
             last_date = self.customer.last_subscription_lesson_date
-            self.assertEqual(last_date, self.tzdatetime(2021, 3, 30, 20))
+            compare_date = datetime(2021, 3, 30, 20)
+            self.assertEqual(last_date.date(), compare_date.date())
+            self.assertEqual(last_date.time(), compare_date.time())
 
     def test_dont_set_last_lesson_without_subscription(self):
         lesson = self._buy_a_lesson()

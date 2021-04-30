@@ -248,6 +248,7 @@ class Customer(models.Model):
 
     def set_last_lesson_date(self):
         self.last_subscription_lesson_date = datetime.now(self.timezone)
+        self.save()
 
     class Meta:
         verbose_name = 'Profile'

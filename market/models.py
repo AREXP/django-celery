@@ -390,6 +390,7 @@ class Class(ProductContainer):
         """
         super().mark_as_fully_used()
         if self.subscription:
+            self.customer.set_last_lesson_date()
             self.subscription.update_first_lesson_date()
             self.subscription.check_is_fully_finished()
 
