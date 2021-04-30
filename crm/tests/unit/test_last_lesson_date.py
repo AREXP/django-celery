@@ -87,7 +87,17 @@ class LastLessonTest(TestCase):
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_clean_last_lesson_after_finish_all_lessons(self):
-        pass
+        s = self._get_a_subscription()
+
+        classes = [c for c in s.classes.all()]
+        for klass in classes[:-1]:
+            klass.mark_as_fully_used()
+            self.customer.refresh_from_db()
+            self.assertIsNotNone(self.customer.last_subscription_lesson_date)
+
+        classes[-1].mark_as_fully_used()
+        self.customer.refresh_from_db()
+        self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_no_reset_after_cancelled_lesson(self):
         pass
