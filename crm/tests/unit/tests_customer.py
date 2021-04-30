@@ -1,4 +1,6 @@
 from django.core.exceptions import ValidationError
+from django.test import override_settings
+from freezegun import freeze_time
 from mixer.backend.django import mixer
 
 from elk.utils.testing import TestCase, create_customer
@@ -76,3 +78,11 @@ class CustomerTestCase(TestCase):
     def test_customer_profile_automaticaly_emerges_when_creating_stock_django_user(self):
         u = mixer.blend('auth.User')
         self.assertIsNotNone(u.crm)
+
+    @freeze_time('2021-04-30 15:00')
+    @override_settings(TIME_ZONE='Europe/Moscow')
+    def test_set_last_lesson_date(self):
+        customer = create_customer()
+        customer.set_last_lesson_date()
+        last_lesson = customer.last_subscription_lesson_date
+        self.assertEqual(last_lesson, self.tzdatetime(2021, 4, 30, 18))

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import datetime
 
 import requests
 from django.apps import apps
@@ -244,6 +245,9 @@ class Customer(models.Model):
         if self.classes.filter(is_fully_used=False).exclude(is_scheduled=True).count():
             return True
         return False
+
+    def set_last_lesson_date(self):
+        self.last_subscription_lesson_date = datetime.now(self.timezone)
 
     class Meta:
         verbose_name = 'Profile'
