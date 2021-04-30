@@ -306,7 +306,7 @@ CACHES = {
 
 BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
-CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_TASK_SERIALIZER = 'json'
 
 CELERYBEAT_SCHEDULE = {
     'check_classes_that_will_start_soon': {
@@ -321,6 +321,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'accounting.tasks.bill_timeline_entries',
         'schedule': timedelta(minutes=1),
     },
+    'check_lost_students': {
+        'task': 'crm.tasks.notify_about_last_lesson',
+        'schedule': timedelta(minutes=1),
+    }
 }
 
 

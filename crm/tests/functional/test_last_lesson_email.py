@@ -9,7 +9,6 @@ from crm.tasks import notify_about_last_lesson
 
 
 class LastLessonEmailTest(TestCase):
-
     @patch('market.signals.Owl')
     def test_send_email(self, Owl):
         customer = create_customer()
