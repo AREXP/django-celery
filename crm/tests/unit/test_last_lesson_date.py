@@ -29,26 +29,25 @@ class LastLessonTest(TestCase):
         c.save()
         return c
 
+    def _get_a_subscription(self):
+        s = Subscription(
+            customer=self.customer,
+            product=self.product,
+            buy_price=150
+        )
+        s.save()
+        return s
+
     def test_no_last_lesson_without_lesson(self):
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_no_last_lesson_with_subscription_without_lesson(self):
-        s = Subscription(
-            customer=self.customer,
-            product=self.product,
-            buy_price=150
-        )
-        s.save()
+        self._get_a_subscription()
 
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_set_last_lesson_after_lesson(self):
-        s = Subscription(
-            customer=self.customer,
-            product=self.product,
-            buy_price=150
-        )
-        s.save()
+        s = self._get_a_subscription()
 
         entry = mixer.blend(
             'timeline.Entry',
@@ -77,12 +76,7 @@ class LastLessonTest(TestCase):
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_clean_last_lesson_after_subscription(self):
-        s = Subscription(
-            customer=self.customer,
-            product=self.product,
-            buy_price=150
-        )
-        s.save()
+        s = self._get_a_subscription()
 
         self.customer.set_last_lesson_date()
         self.customer.refresh_from_db()
