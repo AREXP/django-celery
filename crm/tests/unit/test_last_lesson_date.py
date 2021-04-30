@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.utils import timezone
 from freezegun import freeze_time
 from mixer.backend.django import mixer
 
@@ -65,33 +64,45 @@ class LastLessonTest(TestCase):
             self.assertIsNone(self.customer.last_subscription_lesson_date)
 
             first_class.mark_as_fully_used()
-            self.customer.refresh_from_db()
 
+            self.customer.refresh_from_db()
             last_date = self.customer.last_subscription_lesson_date
-            compare_date = datetime(2021, 3, 30, 20)
-            self.assertEqual(last_date.date(), compare_date.date())
-            self.assertEqual(last_date.time(), compare_date.time())
+            self.assertEqual(last_date, self.tzdatetime('UTC', 2021, 3, 30, 20))
 
     def test_dont_set_last_lesson_without_subscription(self):
         lesson = self._buy_a_lesson()
         lesson.mark_as_fully_used()
 
+        self.customer.refresh_from_db()
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
-    def test_reset_last_lesson_after_email(self):
+    def test_clean_last_lesson_after_subscription(self):
+        s = Subscription(
+            customer=self.customer,
+            product=self.product,
+            buy_price=150
+        )
+        s.save()
+
+        self.customer.set_last_lesson_date()
+        self.customer.refresh_from_db()
+        self.assertIsNotNone(self.customer.last_subscription_lesson_date)
+
+        s.mark_as_fully_used()
+        self.customer.refresh_from_db()
+        self.assertIsNone(self.customer.last_subscription_lesson_date)
+
+    def test_clean_last_lesson_after_finish_all_lessons(self):
         pass
 
     def test_no_reset_after_cancelled_lesson(self):
         pass
 
+    def test_reset_last_lesson_after_email(self):
+        pass
+
     def test_send_email(self):
         pass
 
-    def test_clean_last_lesson_after_subscription(self):
-        pass
-
     def test_last_lesson_with_renew(self):
-        pass
-
-    def test_clean_last_lesson_after_finish_all_lessons(self):
         pass
