@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-from elk import settings
-from elk.celery import app as celery
 from crm.models import Customer
 from crm.signals import last_lesson_for_a_long_time
+from elk import settings
+from elk.celery import app as celery
 
 
 @celery.task

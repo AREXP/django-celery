@@ -3,9 +3,8 @@ from unittest.mock import patch
 from django.core import mail
 from freezegun import freeze_time
 
-from elk.utils.testing import TestCase, create_customer
-
 from crm.tasks import notify_about_last_lesson
+from elk.utils.testing import TestCase, create_customer
 
 
 class LastLessonEmailTest(TestCase):
