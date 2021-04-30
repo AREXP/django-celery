@@ -250,6 +250,10 @@ class Customer(models.Model):
         self.last_subscription_lesson_date = datetime.now(self.timezone)
         self.save()
 
+    def erase_last_lesson_date(self):
+        self.last_subscription_lesson_date = None
+        self.save()
+
     class Meta:
         verbose_name = 'Profile'
 
