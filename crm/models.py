@@ -102,7 +102,8 @@ class Customer(models.Model):
     instagram = models.CharField('Instagram username', max_length=140, blank=True)
     linkedin = models.CharField('Linkedin username', max_length=140, blank=True)
 
-    last_subscription_lesson_date = models.DateTimeField(null=True, blank=True, db_index=True)
+    # last subscription lesson date
+    last_lesson_date = models.DateTimeField(null=True, blank=True, db_index=True)
 
     def get_absolute_url(self):
         return resolve_url('admin:crm_customer_change', self.pk)
@@ -247,11 +248,11 @@ class Customer(models.Model):
         return False
 
     def set_last_lesson_date(self):
-        self.last_subscription_lesson_date = datetime.now(self.timezone)
+        self.last_lesson_date = datetime.now(self.timezone)
         self.save()
 
     def erase_last_lesson_date(self):
-        self.last_subscription_lesson_date = None
+        self.last_lesson_date = None
         self.save()
 
     class Meta:

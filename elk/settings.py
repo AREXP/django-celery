@@ -323,7 +323,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=1),
     },
     'check_lost_students': {
-        'task': 'crm.tasks.notify_about_last_lesson',
+        'task': 'crm.tasks.notify_lost_customers',
         'schedule': timedelta(minutes=1),
     }
 }
@@ -336,7 +336,7 @@ GEOIP_PATH = './geolite/'
 STRIPE_API_KEY = env('STRIPE_API_KEY')
 STRIPE_PK = env('STRIPE_PK')
 
-LAST_LESSON_STUDENT_NOTIFY_DAYS = 7
+NOTIFY_LOST_CUSTOMERS_DAYS = 7
 
 # Uncomment this lines to catch all runtime warnings as errors
 

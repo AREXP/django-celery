@@ -84,13 +84,13 @@ class CustomerTestCase(TestCase):
     def test_set_last_lesson_date(self):
         customer = create_customer()
         customer.set_last_lesson_date()
-        last_lesson = customer.last_subscription_lesson_date
+        last_lesson = customer.last_lesson_date
         self.assertEqual(last_lesson, self.tzdatetime(2021, 4, 30, 18))
 
     def test_erase_last_lesson_date(self):
         customer = create_customer()
         customer.set_last_lesson_date()
-        self.assertIsNotNone(customer.last_subscription_lesson_date)
+        self.assertIsNotNone(customer.last_lesson_date)
 
         customer.erase_last_lesson_date()
-        self.assertIsNone(customer.last_subscription_lesson_date)
+        self.assertIsNone(customer.last_lesson_date)

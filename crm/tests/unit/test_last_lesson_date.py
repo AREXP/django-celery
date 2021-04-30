@@ -39,12 +39,12 @@ class LastLessonTest(TestCase):
         return s
 
     def test_no_last_lesson_without_lesson(self):
-        self.assertIsNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNone(self.customer.last_lesson_date)
 
     def test_no_last_lesson_with_subscription_without_lesson(self):
         self._get_a_subscription()
 
-        self.assertIsNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNone(self.customer.last_lesson_date)
 
     def test_set_last_lesson_after_lesson(self):
         s = self._get_a_subscription()
@@ -60,12 +60,12 @@ class LastLessonTest(TestCase):
 
         with freeze_time('2021-03-30 20:00'):
             self.assertTrue(first_class.has_started())
-            self.assertIsNone(self.customer.last_subscription_lesson_date)
+            self.assertIsNone(self.customer.last_lesson_date)
 
             first_class.mark_as_fully_used()
 
             self.customer.refresh_from_db()
-            last_date = self.customer.last_subscription_lesson_date
+            last_date = self.customer.last_lesson_date
             self.assertEqual(last_date, self.tzdatetime('UTC', 2021, 3, 30, 20))
 
     def test_dont_set_last_lesson_without_subscription(self):
@@ -73,31 +73,31 @@ class LastLessonTest(TestCase):
         lesson.mark_as_fully_used()
 
         self.customer.refresh_from_db()
-        self.assertIsNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNone(self.customer.last_lesson_date)
 
     def test_clean_last_lesson_after_subscription(self):
         s = self._get_a_subscription()
 
         self.customer.set_last_lesson_date()
         self.customer.refresh_from_db()
-        self.assertIsNotNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNotNone(self.customer.last_lesson_date)
 
         s.mark_as_fully_used()
         self.customer.refresh_from_db()
-        self.assertIsNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNone(self.customer.last_lesson_date)
 
-    def test_clean_last_lesson_after_finish_all_lessons(self):
+    def test_clean_last_lesson_date_after_finish_all_lessons(self):
         s = self._get_a_subscription()
 
         classes = [c for c in s.classes.all()]
         for klass in classes[:-1]:
             klass.mark_as_fully_used()
             self.customer.refresh_from_db()
-            self.assertIsNotNone(self.customer.last_subscription_lesson_date)
+            self.assertIsNotNone(self.customer.last_lesson_date)
 
         classes[-1].mark_as_fully_used()
         self.customer.refresh_from_db()
-        self.assertIsNone(self.customer.last_subscription_lesson_date)
+        self.assertIsNone(self.customer.last_lesson_date)
 
     def test_no_reset_after_cancelled_lesson(self):
         s = self._get_a_subscription()
@@ -114,23 +114,19 @@ class LastLessonTest(TestCase):
         with freeze_time('2021-03-30 20:00'):
             first_class.cancel()
             self.customer.refresh_from_db()
-            self.assertIsNone(self.customer.last_subscription_lesson_date)
+            self.assertIsNone(self.customer.last_lesson_date)
 
     def test_last_lesson_after_renew(self):
         s = self._get_a_subscription()
 
         self.customer.set_last_lesson_date()
-        prev_last_date = self.customer.last_subscription_lesson_date
+        prev_last_date = self.customer.last_lesson_date
         s.renew()
         self.customer.refresh_from_db()
-        self.assertEqual(
-            prev_last_date, self.customer.last_subscription_lesson_date,
-        )
+        self.assertEqual(prev_last_date, self.customer.last_lesson_date)
 
         self.customer.erase_last_lesson_date()
-        none_last_date = self.customer.last_subscription_lesson_date
+        none_last_date = self.customer.last_lesson_date
         s.renew()
         self.customer.refresh_from_db()
-        self.assertEqual(
-            none_last_date, self.customer.last_subscription_lesson_date,
-        )
+        self.assertEqual(none_last_date, self.customer.last_lesson_date)
