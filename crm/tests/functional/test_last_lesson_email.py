@@ -24,4 +24,5 @@ class LastLessonEmailTest(TestCase):
         with freeze_time('2021-04-27 16:00'):
             notify_about_last_lesson()
 
+        customer.refresh_from_db()
         self.assertIsNone(customer.last_subscription_lesson_date)
