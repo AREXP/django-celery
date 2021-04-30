@@ -100,13 +100,43 @@ class LastLessonTest(TestCase):
         self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_no_reset_after_cancelled_lesson(self):
-        pass
+        s = self._get_a_subscription()
+
+        entry = mixer.blend(
+            'timeline.Entry',
+            lesson=mixer.blend(lessons.OrdinaryLesson),
+            teacher=create_teacher(),
+            start=self.tzdatetime(2021, 3, 31, 12, 0)
+        )
+        first_class = s.classes.first()
+        first_class.timeline = entry
+
+        with freeze_time('2021-03-30 20:00'):
+            first_class.cancel()
+            self.customer.refresh_from_db()
+            self.assertIsNone(self.customer.last_subscription_lesson_date)
+
+    def test_last_lesson_after_renew(self):
+        s = self._get_a_subscription()
+
+        self.customer.set_last_lesson_date()
+        prev_last_date = self.customer.last_subscription_lesson_date
+        s.renew()
+        self.customer.refresh_from_db()
+        self.assertEqual(
+            prev_last_date, self.customer.last_subscription_lesson_date,
+        )
+
+        self.customer.erase_last_lesson_date()
+        none_last_date = self.customer.last_subscription_lesson_date
+        s.renew()
+        self.customer.refresh_from_db()
+        self.assertEqual(
+            none_last_date, self.customer.last_subscription_lesson_date,
+        )
 
     def test_reset_last_lesson_after_email(self):
         pass
 
     def test_send_email(self):
-        pass
-
-    def test_last_lesson_with_renew(self):
         pass
