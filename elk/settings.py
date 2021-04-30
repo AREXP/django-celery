@@ -306,7 +306,8 @@ CACHES = {
 
 BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['application/x-python-serialize']
+CELERY_TASK_SERIALIZER = 'pickle'
 
 CELERYBEAT_SCHEDULE = {
     'check_classes_that_will_start_soon': {
