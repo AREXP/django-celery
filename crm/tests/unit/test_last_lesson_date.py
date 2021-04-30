@@ -1,15 +1,77 @@
-from elk.utils.testing import TestCase
+from datetime import timedelta
+
+from freezegun import freeze_time
+from mixer.backend.django import mixer
+
+from elk.utils.testing import TestCase, create_customer, create_teacher
+from lessons import models as lessons
+from market.models import Class, Subscription
+from products.models import Product1
 
 
 class LastLessonTest(TestCase):
-    def test_true(self):
-        self.assertTrue(True)
+    fixtures = ('products', 'lessons')
 
-    def test_no_email_without_lesson(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.product = Product1.objects.get(pk=1)
+        cls.product.duration = timedelta(days=5)
+        cls.product.save()
 
-    def test_no_email_with_subscription_without_lesson(self):
-        pass
+    def setUp(self):
+        self.customer = create_customer()
+
+    def _buy_a_lesson(self):
+        c = Class(
+            customer=self.customer,
+            lesson_type=lessons.OrdinaryLesson.get_default().get_contenttype()
+        )
+        c.save()
+        return c
+
+    def test_no_last_lesson_without_lesson(self):
+        self.assertIsNone(self.customer.last_subscription_lesson_date)
+
+    def test_no_last_lesson_with_subscription_without_lesson(self):
+        s = Subscription(
+            customer=self.customer,
+            product=self.product,
+            buy_price=150
+        )
+        s.save()
+
+        self.assertIsNone(self.customer.last_subscription_lesson_date)
+
+    def test_set_last_lesson_after_lesson(self):
+        s = Subscription(
+            customer=self.customer,
+            product=self.product,
+            buy_price=150
+        )
+        s.save()
+
+        entry = mixer.blend(
+            'timeline.Entry',
+            lesson=mixer.blend(lessons.OrdinaryLesson),
+            teacher=create_teacher(),
+            start=self.tzdatetime(2021, 3, 30, 12, 0)
+        )
+        first_class = s.classes.first()
+        first_class.timeline = entry
+
+        with freeze_time('2021-03-30 20:00'):
+            self.assertTrue(first_class.has_started())
+            self.assertIsNone(self.customer.last_subscription_lesson_date)
+
+            first_class.mark_as_fully_used()
+            last_date = self.customer.last_subscription_lesson_date
+            self.assertEqual(last_date, self.tzdatetime(2021, 3, 30, 20))
+
+    def test_dont_set_last_lesson_without_subscription(self):
+        lesson = self._buy_a_lesson()
+        lesson.mark_as_fully_used()
+
+        self.assertIsNone(self.customer.last_subscription_lesson_date)
 
     def test_reset_last_lesson_after_email(self):
         pass
@@ -18,9 +80,6 @@ class LastLessonTest(TestCase):
         pass
 
     def test_send_email(self):
-        pass
-
-    def test_dont_set_last_lesson_without_subscription(self):
         pass
 
     def test_clean_last_lesson_after_subscription(self):

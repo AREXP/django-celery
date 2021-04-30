@@ -101,6 +101,8 @@ class Customer(models.Model):
     instagram = models.CharField('Instagram username', max_length=140, blank=True)
     linkedin = models.CharField('Linkedin username', max_length=140, blank=True)
 
+    last_subscription_lesson_date = models.DateTimeField(null=True, blank=True, db_index=True)
+
     def get_absolute_url(self):
         return resolve_url('admin:crm_customer_change', self.pk)
 
