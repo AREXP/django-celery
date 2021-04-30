@@ -134,9 +134,3 @@ class LastLessonTest(TestCase):
         self.assertEqual(
             none_last_date, self.customer.last_subscription_lesson_date,
         )
-
-    def test_reset_last_lesson_after_email(self):
-        pass
-
-    def test_send_email(self):
-        pass

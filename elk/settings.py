@@ -331,6 +331,8 @@ GEOIP_PATH = './geolite/'
 STRIPE_API_KEY = env('STRIPE_API_KEY')
 STRIPE_PK = env('STRIPE_PK')
 
+LAST_LESSON_STUDENT_NOTIFY_DAYS = 7
+
 # Uncomment this lines to catch all runtime warnings as errors
 
 # import warnings  # noqa
