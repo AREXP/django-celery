@@ -6,6 +6,7 @@ from django.dispatch import Signal, receiver
 from mailer.owl import Owl
 
 trial_lesson_added = Signal()
+last_lesson_for_a_long_time = Signal()
 
 
 @receiver(trial_lesson_added, dispatch_uid='notify_new_customer_about_trial_lesson')
@@ -35,3 +36,16 @@ def create_profile_for_new_users(sender, **kwargs):
         pass
 
     Customer.objects.create(user=user)
+
+
+@receiver(last_lesson_for_a_long_time, dispatch_uid='send_last_lesson_email')
+def send_last_lesson_email(sender, **kwargs):
+    owl = Owl(
+        template='mail/last_lesson_a_long_ago.html',
+        ctx={
+            'c': sender,
+        },
+        to=[sender.user.email],
+        timezone=sender.timezone,
+    )
+    owl.send()
