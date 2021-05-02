@@ -306,6 +306,7 @@ CACHES = {
 
 BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['application/x-python-serialize']
 CELERY_TASK_SERIALIZER = 'pickle'
 
 CELERYBEAT_SCHEDULE = {
@@ -321,6 +322,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'accounting.tasks.bill_timeline_entries',
         'schedule': timedelta(minutes=1),
     },
+    'notify_lost_customers': {
+        'task': 'crm.tasks.notify_lost_customers',
+        'schedule': timedelta(minutes=1),
+    }
 }
 
 
@@ -330,6 +335,8 @@ GEOIP_PATH = './geolite/'
 
 STRIPE_API_KEY = env('STRIPE_API_KEY')
 STRIPE_PK = env('STRIPE_PK')
+
+NOTIFY_LOST_CUSTOMERS_DAYS = 7
 
 # Uncomment this lines to catch all runtime warnings as errors
 

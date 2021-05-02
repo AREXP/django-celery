@@ -166,6 +166,13 @@ class Subscription(ProductContainer):
         else:
             self.mark_as_fully_used()
 
+    def mark_as_fully_used(self):
+        """
+        Erase customer's last lesson before setting subscription as full
+        """
+        self.customer.erase_last_lesson_date()
+        super().mark_as_fully_used()
+
     def update_first_lesson_date(self):
         """
         Set the first lesson date, if required
@@ -390,6 +397,7 @@ class Class(ProductContainer):
         """
         super().mark_as_fully_used()
         if self.subscription:
+            self.customer.set_last_lesson_date()
             self.subscription.update_first_lesson_date()
             self.subscription.check_is_fully_finished()
 
