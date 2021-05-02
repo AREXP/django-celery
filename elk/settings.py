@@ -322,7 +322,7 @@ CELERYBEAT_SCHEDULE = {
         'task': 'accounting.tasks.bill_timeline_entries',
         'schedule': timedelta(minutes=1),
     },
-    'check_lost_students': {
+    'notify_lost_customers': {
         'task': 'crm.tasks.notify_lost_customers',
         'schedule': timedelta(minutes=1),
     }
